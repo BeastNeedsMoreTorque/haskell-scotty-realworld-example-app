@@ -2,9 +2,14 @@ module Spec.User (spec) where
 
 import ClassyPrelude
 import Test.Hspec
-import Core.Types
-import qualified Adapter.HTTP.Client as RW
+import Feature.Comment.Types
+import Feature.User.Types
+import Feature.Article.Types
+import Feature.Auth.Types
+import Feature.Common.Types
+import qualified Misc.Client as RW
 import Text.StringRandom
+import Control.Concurrent
 
 import Spec.Common
 
@@ -112,6 +117,9 @@ userSpec =
         let expected = user { userUsername = name, userEmail = mail }
         runClient (RW.updateUser token $ UpdateUser (Just mail) (Just name) (Just pass) Nothing Nothing)
           `shouldReturn` Right expected
+        -- you should be able to login with the new authentication
+        Right user' <- runClient $ RW.login $ Auth mail pass
+        userUsername user' `shouldBe` name
         
       it "should update image, bio successfully" $ do
         Right user <- registerRandomUser

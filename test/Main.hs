@@ -2,8 +2,9 @@ import ClassyPrelude
 import Test.Hspec
 import System.Environment
 import Database.PostgreSQL.Simple
-import qualified Adapter.HTTP.Client as RW
+import qualified Misc.Client as RW
 import qualified Lib
+import Control.Concurrent
 
 import Spec.Common
 import qualified Spec.User as User
@@ -25,15 +26,14 @@ startEnv = do
   setEnv "DATABASE_URL" "postgresql://127.0.0.1/realworld_test"
   setEnv "ENABLE_HTTPS" "False"
   setEnv "JWT_EXPIRATION_SECS" "8"
-  tId <- fork Lib.main
+  tId <- forkIO Lib.main
   unlessM healthCheck $ do
     putStrLn "Waiting for server ..."
     threadDelay 1000000
   return tId
   where
-    healthCheck = do
-      result <- runClient RW.health
-      return $ either (const False) id result
+    healthCheck =
+      either (const False) id <$> runClient RW.health
 
 cleanEnv :: ThreadId -> IO ()
 cleanEnv tId = do

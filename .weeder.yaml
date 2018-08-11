@@ -1,0 +1,15 @@
+- package:
+  - name: realworld
+  - section:
+    - name: exe:realworld-exe
+    - message:
+      - name: Redundant build-depends entry
+      - depends: base
+  - section:
+    - name: test:realworld-test
+    - message:
+      - name: Weeds exported
+      - module:
+        - name: Spec.Common
+        - identifier: randomCreateArticleParam
+

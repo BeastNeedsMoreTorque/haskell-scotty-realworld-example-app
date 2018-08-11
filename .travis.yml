@@ -38,8 +38,11 @@ before_install:
 
 install:
 # Build dependencies
-- stack --no-terminal --install-ghc test --only-dependencies
+- stack --install-ghc test --only-dependencies
+- stack install weeder hlint
 
 script:
 # Build the package, its tests, and its code coverage reposrt
-- stack --no-terminal test --coverage
+- stack build --test --coverage
+- hlint .
+- weeder .
